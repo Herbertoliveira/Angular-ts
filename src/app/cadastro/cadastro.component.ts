@@ -3,6 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 import { DiasDaSemana } from '../dias-da-semana';
 import { Produto } from '../Objetos/Produto';
+import { ProdutoService } from '../service/produto.service';
 
 @Component({
   selector: 'app-cadastro',
@@ -13,36 +14,32 @@ import { Produto } from '../Objetos/Produto';
 export class CadastroComponent implements OnInit{
 
   id:any
-  texto: string = 'teste'
-  valor: number = 0
-  endereco: [string,number] = ['rua teste numero:',30]
-  dia: DiasDaSemana = DiasDaSemana.seg
-
-  produto: Produto = new Produto('Cadeira', 900)
+  
+  produto: Produto = new Produto(0,'',0)
 
 
-  constructor(private route: ActivatedRoute,
-    private router: Router) { 
-     
-  } 
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private router: Router,
+    private prodService: ProdutoService
+    ) { } 
 
   ngOnInit(): void {
-     
-   this.produto.preco = this.produto.aplicarDesconto(950)
 
-    this.route.params.subscribe(parametros => {
+    this.activatedRoute.params.subscribe(parametros => {
       if(parametros['id']){
         this.id = parametros['id']
         alert(this.id)
       }
     }) 
-
-    this.texto = this.retornarNome('João')
-
   }
 
-  retornarNome = (nome: string): string => {
-    return ` ${nome} da Silva ` 
+  adicionar = () => {
+    this.prodService.adicionar(this.produto).subscribe(
+      success => console.log('Salvou'),
+      error => console.log('Deu Ruim'),
+      () => console.log('Requisição Completa'))
+      this.router.navigate(['home'])
   }
 
 }

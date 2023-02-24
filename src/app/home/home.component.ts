@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Produto } from '../Objetos/Produto';
 import { ProdutoService } from '../service/produto.service';
 
 @Component({
@@ -9,15 +10,29 @@ import { ProdutoService } from '../service/produto.service';
 
 export class HomeComponent implements OnInit{
 
-prod:any
-constructor(private produtoService: ProdutoService ){
+  prod:any
+  produtos: Array<Produto> = []
+  carregarLoading: boolean = false
+  constructor(private produtoService: ProdutoService ) { }
 
-}
 
   ngOnInit(): void {
 
-    
-    this.prod = this.produtoService.listar()
+    this.produtoService.listar().subscribe(prods => {
+      setTimeout(() => {
+        this.carregarLoading = true
+        this.produtos = prods
+      },1000)
+    })
+  }
+
+  excluirItem = (id: any) => {
+    this.produtoService.excluirItem(id).subscribe(
+      success => console.log('Deletou'),
+      error => console.log('Deu Ruim'),
+      () => console.log('Requisição Completa')
+    )
+    this.ngOnInit();
     
   }
 
