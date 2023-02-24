@@ -14,8 +14,8 @@ import { ProdutoService } from '../service/produto.service';
 export class CadastroComponent implements OnInit{
 
   id:any
-  
   produto: Produto = new Produto(0,'',0)
+  textoBotao: string = 'Salvar'
 
 
   constructor(
@@ -28,15 +28,32 @@ export class CadastroComponent implements OnInit{
 
     this.activatedRoute.params.subscribe(parametros => {
       if(parametros['id']){
+        this.textoBotao = 'Editar'
         this.id = parametros['id']
-        alert(this.id)
+        this.prodService.buscarItemId(this.id).subscribe(prod => {
+        this.produto = prod
+        })
+
+        console.log(`id enviado: ${this.id}`)
       }
     }) 
   }
 
   adicionar = () => {
-    this.prodService.adicionar(this.produto).subscribe(
-      success => console.log('Salvou'),
+    if(this.textoBotao == 'Salvar'){
+      this.prodService.adicionar(this.produto).subscribe(
+        success => console.log('Salvou'),
+        error => console.log('Deu Ruim'),
+        () => console.log('Requisição Completa'))
+      } else {
+        this.editar()
+      }
+      this.router.navigate(['home'])
+  }
+
+  editar = () => {
+    this.prodService.editar(this.produto).subscribe(
+      success => console.log('Editou'),
       error => console.log('Deu Ruim'),
       () => console.log('Requisição Completa'))
       this.router.navigate(['home'])
